@@ -1,33 +1,34 @@
 import React, { Component } from "react";
-import axios from "axios";
+import { connect } from "react-redux";
+import { setLoading, getCharacters } from "../ducks/breakingBad";
+import { setStarWarsLoading, getStarWarsCharacters } from "../ducks/starWars";
+
 
 class CharacterList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      breakingBadLoading: true,
       breakingBad: [],
-      starWarsLoading: true,
       starWars: []
     };
   }
 
   componentDidMount() {
-    axios
-      .get("https://www.breakingbadapi.com/api/character/random?limit=10")
-      .then(response => {
-        this.setState({
-          breakingBad: response.data,
-          breakingBadLoading: false
-        });
-      });
+    this.props.getCharacters();
+    // .then(response => {
+    //   this.setState({
+    //     breakingBad: response.data
+    //   });
+    //   this.props.setLoading(false);
+    // });
 
-    axios.get("https://swapi.co/api/people").then(response => {
-      this.setState({
-        starWars: response.data.results,
-        starWarsLoading: false
-      });
-    });
+    this.props.getStarWarsCharacters();
+    // .then(response => {
+    //   this.setState({
+    //     starWars: response.data.results
+    //   });
+    //   this.props.setStarWarsLoading(false);
+    // });
   }
 
   render() {
@@ -42,8 +43,8 @@ class CharacterList extends Component {
         <aside>
           <h1>Breaking Bad Characters</h1>
           <div>
-            {this.state.breakingBadLoading && "Loading..."}
-            {this.state.breakingBad.map(character => (
+            {this.props.breakingBad.loading && "Loading..."}
+            {this.props.breakingBad.characters.map(character => (
               <p key={character.char_id}>{character.name}</p>
             ))}
           </div>
@@ -51,8 +52,8 @@ class CharacterList extends Component {
         <aside>
           <h1>Star Wars Characters</h1>
           <div>
-            {this.state.starWarsLoading && "Loading..."}
-            {this.state.starWars.map(character => {
+            {this.props.starWars.loading && "Loading..."}
+            {this.props.starWars.characters.map(character => {
               return <p key={character.name}>{character.name}</p>;
             })}
           </div>
@@ -61,5 +62,13 @@ class CharacterList extends Component {
     );
   }
 }
-
-export default CharacterList;
+const mapStateToProps = reduxState => {
+  return {
+    breakingBad: reduxState.breakingBad,
+    starWars: reduxState.starWars
+  };
+};
+export default connect(
+  mapStateToProps,
+  { setLoading, setStarWarsLoading, getCharacters, getStarWarsCharacters }
+)(CharacterList);
