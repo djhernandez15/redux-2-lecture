@@ -1,12 +1,15 @@
 import React from "react";
+import { Provider } from "react-redux";
 import CharacterList from "./components/CharacterList";
-import "./App.css";
+import store from "./store";
 
 function App() {
   return (
-    <div className="App">
-      <CharacterList />
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <CharacterList />
+      </div>
+    </Provider>
   );
 }
 
